@@ -4,6 +4,7 @@ import com.microservice.employeeservice.Entity.EmployeeEntity;
 import com.microservice.employeeservice.dto.ApiResponseDto;
 import com.microservice.employeeservice.dto.DepartmentDto;
 import com.microservice.employeeservice.dto.EmployeeDto;
+import com.microservice.employeeservice.dto.OrganisationDto;
 import com.microservice.employeeservice.mapper.EmployeeMapper;
 import com.microservice.employeeservice.repository.EmployeeRepository;
 import com.microservice.employeeservice.service.APIClient;
@@ -38,16 +39,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeEntity employee = employeeRepository.findById(id).get();
         EmployeeDto employeeDto = EmployeeMapper.mapToEmployeeDto(employee);
 
-//        DepartmentDto departmentDto = webClient.get()
-//                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
-//                .retrieve()
-//                .bodyToMono(DepartmentDto.class)
-//                .block();
-        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
+        DepartmentDto departmentDto = webClient.get()
+                .uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
+
+        OrganisationDto organisationDto = webClient.get()
+                .uri("http://localhost:8083/api/organisation/" + employee.getOrganisationCode())
+                .retrieve()
+                .bodyToMono(OrganisationDto.class)
+                .block();
+//        DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
         return new ApiResponseDto(
                 employeeDto,
-                departmentDto
+                departmentDto,
+                organisationDto
         );
     }
 }
